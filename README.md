@@ -4,41 +4,31 @@ Open-source service status platform with public status pages, uptime timelines, 
 
 **Live example:** [status.datagateapp.com](https://status.datagateapp.com/) — DataGate VPN service status (public home with per-project uptime timelines, project detail pages, Google sign-in, white-label branding).
 
-StatusGate helps teams publish transparent health information for their products: HTTP/JSON/XML monitoring, background checks, grouped component views, and incident updates — similar to modern status pages, but fully under your control.
+StatusGate helps teams publish transparent health information for their products: HTTP/JSON/XML monitoring, VPN checks (OpenVPN, Xray), background checks, grouped component views, and incident updates — similar to modern status pages, but fully under your control.
 
-## What's new in `develop`
-
-This release brings the full StatusGate stack from initial scaffolding to a deployable status page product.
+## Features
 
 ### Public status pages
 
-- **Home page** lists published projects; each card embeds the same **System status** panel as the project page (90-day timeline, component groups, uptime %, date range navigation).
-- **Project pages** show grouped uptime timelines, current component health, latency, and incident history.
-- **Contact page** and simplified public footer.
-- **Header navigation:** Home, About, Contact; user menu with Google avatar and name; account sidebar for Account / Security / Admin.
+- Home page with per-project **System status** timelines (same panel as on the project page)
+- Project pages: uptime timelines, current service health, latency, incidents
+- Contact page, public header (Home / About / Contact), mobile menu
 
-### Authentication
+### Monitoring
 
-- **Google Identity Services** sign-in (idToken flow) instead of redirect OAuth.
-- Google **avatar URL** stored on the account and refreshed on each sign-in.
-- Login rate limiting, JWT + refresh tokens, optional MFA (TOTP).
+- HTTP / JSON / XML health checks
+- **OpenVPN** and **Xray**: paste config, connect, probe through tunnel/proxy, show network details (IP, exit IP, DNS, latency)
+- Background worker with configurable poll intervals
+
+### Authentication & admin
+
+- Google Identity Services sign-in, avatar in header
+- JWT + refresh tokens, optional MFA (TOTP)
+- Admin dashboard: projects, services, incidents, service types
 
 ### Branding
 
-- White-label via build-time env: `VITE_BRAND_NAME`, `VITE_BRAND_LOGO_URL`, `VITE_BRAND_TAGLINE`.
-- Logo and header text are independent (logo-only header supported).
-
-### Backend API
-
-- FastAPI + PostgreSQL + Alembic migrations.
-- Public APIs for projects, services, system status timelines, incidents.
-- Monitoring scheduler and HTTP/JSON/XML check workers.
-- **Project uptime** in the public project list API (90-day worst-per-day across components).
-
-### Infrastructure
-
-- Docker Compose for local and production deployment.
-- Nginx frontend with API proxy; `X-Forwarded-Proto` support behind reverse proxy.
+- White-label via `VITE_BRAND_NAME`, `VITE_BRAND_LOGO_URL`, `VITE_BRAND_TAGLINE`
 
 ## Repository structure
 
@@ -52,7 +42,7 @@ This is the main orchestration repository. Application code lives in Git submodu
 ## Clone
 
 ```bash
-git clone --recurse-submodules -b develop git@github.com:IMKolganov/StatusGate.git
+git clone --recurse-submodules git@github.com:IMKolganov/StatusGate.git
 cd StatusGate
 ```
 
@@ -101,8 +91,8 @@ cd ../frontend
 Update submodule pointers in this repo when you want to pin new versions:
 
 ```bash
-cd backend && git pull origin develop && cd ..
-cd frontend && git pull origin develop && cd ..
+cd backend && git pull origin main && cd ..
+cd frontend && git pull origin main && cd ..
 git add backend frontend
 git commit -m "Update submodules"
 ```
