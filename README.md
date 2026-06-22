@@ -28,7 +28,7 @@ StatusGate helps teams publish transparent health information for their products
 
 ### Branding
 
-- White-label via `VITE_BRAND_NAME`, `VITE_BRAND_LOGO_URL`, `VITE_BRAND_TAGLINE`
+- White-label via `VITE_BRAND_NAME`, `VITE_BRAND_LOGO_URL` (or `VITE_BRAND_LOGO_URL_LIGHT` / `VITE_BRAND_LOGO_URL_DARK`), `VITE_BRAND_TAGLINE`
 
 ## Repository structure
 
@@ -58,7 +58,7 @@ git submodule update --init --recursive
 cp .env.example .env
 # Set JWT_SECRET in .env (at least 32 characters)
 # Optional: GOOGLE_CLIENT_ID for Google sign-in
-# Optional: VITE_BRAND_NAME, VITE_BRAND_LOGO_URL for white-label
+# Optional: VITE_BRAND_NAME, VITE_BRAND_LOGO_URL(_LIGHT/_DARK) for white-label
 
 docker compose up -d --build
 ```
