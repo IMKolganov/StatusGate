@@ -1,12 +1,27 @@
 {
-  "venvPath": "backend",
-  "venv": ".venv",
   "include": ["backend"],
-  "exclude": ["**/node_modules", "**/__pycache__", "frontend"],
+  "exclude": ["**/node_modules", "**/__pycache__", "frontend", "backend/.venv"],
+  "typeCheckingMode": "strict",
+  "pythonVersion": "3.14",
+  "extraPaths": ["backend"],
+  "reportUnknownMemberType": "warning",
+  "reportUnknownVariableType": "warning",
+  "reportUnknownArgumentType": "warning",
+  "reportUnknownParameterType": "warning",
+  "reportUnknownLambdaType": "warning",
   "executionEnvironments": [
     {
       "root": "backend",
       "extraPaths": ["backend"]
+    },
+    {
+      "root": "backend/tests",
+      "extraPaths": ["backend"],
+      "reportPrivateUsage": "none",
+      "reportMissingParameterType": "warning",
+      "reportMissingTypeArgument": "warning",
+      "reportUntypedFunctionDecorator": "none",
+      "reportOptionalSubscript": "warning"
     }
   ]
 }
