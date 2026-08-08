@@ -1,3 +1,7 @@
+# DB dumps / local backups
+backups/
+*.dump
+
 # Python
 __pycache__/
 *.py[cod]
