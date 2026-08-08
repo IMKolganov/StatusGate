@@ -70,9 +70,15 @@ docker compose up -d --build
 ## Production deploy
 
 ```bash
-git pull && git submodule update --init --recursive
+cd ~/StatusGate
+git pull --ff-only origin feature/public-tunnel-live-chart
+git submodule update --init --recursive
 docker compose up -d --build
 ```
+
+> `git submodule update` is required after every pull — `git pull` only moves the
+> submodule pointers, not the code inside `backend/` and `frontend/`. Skipping it
+> means Docker rebuilds the previous version.
 
 Put a reverse proxy (nginx, Caddy, etc.) in front of the frontend container and set `REQUIRE_HTTPS=true`, `COOKIE_SECURE=true` when serving over HTTPS.
 
