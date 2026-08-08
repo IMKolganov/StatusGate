@@ -83,6 +83,7 @@ services:
         VITE_BRAND_LOGO_URL_LIGHT: ${VITE_BRAND_LOGO_URL_LIGHT:-}
         VITE_BRAND_LOGO_URL_DARK: ${VITE_BRAND_LOGO_URL_DARK:-}
         VITE_BRAND_TAGLINE: ${VITE_BRAND_TAGLINE:-Service status monitoring}
+        GIT_SHA: ${FRONTEND_GIT_SHA:-}
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
