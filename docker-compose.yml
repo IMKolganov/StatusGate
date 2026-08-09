@@ -17,7 +17,9 @@ services:
       retries: 5
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      target: runtime
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -44,12 +46,37 @@ services:
       SCHEDULER_INTERVAL_SECONDS: ${SCHEDULER_INTERVAL_SECONDS:-30}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      DEFAULT_SPEED_TEST_URL_TEMPLATE: ${DEFAULT_SPEED_TEST_URL_TEMPLATE:-https://speed.cloudflare.com/__down?bytes={bytes}}
+      CLOUDFLARE_SPEED_TEST_ORIGIN: ${CLOUDFLARE_SPEED_TEST_ORIGIN:-https://speed.cloudflare.com}
+      DEFAULT_PROBE_URL: ${DEFAULT_PROBE_URL:-https://ifconfig.me/ip}
+      GOOGLE_PROBE_URL: ${GOOGLE_PROBE_URL:-https://www.gstatic.com/generate_204}
+      INTERNET_PING_HOST: ${INTERNET_PING_HOST:-8.8.8.8}
+      VPN_NETNS_DNS_SERVERS: ${VPN_NETNS_DNS_SERVERS:-1.1.1.1,8.8.8.8}
+      HOST_WAN_BASELINE_PATH: ${HOST_WAN_BASELINE_PATH:-/var/lib/statusgate/host_wan_baseline.json}
+    volumes:
+      - statusgate_data:/var/lib/statusgate
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # One-shot pytest against statusgate_test (does not start with normal `up`).
+  backend-test:
+    profiles: [test]
+    build:
+      context: ./backend
+      target: test
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-compose-test-jwt-secret-at-least-32-characters}
+      TEST_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-statusgate}:${POSTGRES_PASSWORD:-statusgate}@db:5432/statusgate_test
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-statusgate}:${POSTGRES_PASSWORD:-statusgate}@db:5432/statusgate_test
     depends_on:
       db:
         condition: service_healthy
 
   worker:
-    build: ./backend
+    build:
+      context: ./backend
+      target: runtime
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -68,6 +95,15 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       DEFAULT_POLL_INTERVAL_SECONDS: ${DEFAULT_POLL_INTERVAL_SECONDS:-60}
       SCHEDULER_INTERVAL_SECONDS: ${SCHEDULER_INTERVAL_SECONDS:-30}
+      DEFAULT_SPEED_TEST_URL_TEMPLATE: ${DEFAULT_SPEED_TEST_URL_TEMPLATE:-https://speed.cloudflare.com/__down?bytes={bytes}}
+      CLOUDFLARE_SPEED_TEST_ORIGIN: ${CLOUDFLARE_SPEED_TEST_ORIGIN:-https://speed.cloudflare.com}
+      DEFAULT_PROBE_URL: ${DEFAULT_PROBE_URL:-https://ifconfig.me/ip}
+      GOOGLE_PROBE_URL: ${GOOGLE_PROBE_URL:-https://www.gstatic.com/generate_204}
+      INTERNET_PING_HOST: ${INTERNET_PING_HOST:-8.8.8.8}
+      VPN_NETNS_DNS_SERVERS: ${VPN_NETNS_DNS_SERVERS:-1.1.1.1,8.8.8.8}
+      HOST_WAN_BASELINE_PATH: ${HOST_WAN_BASELINE_PATH:-/var/lib/statusgate/host_wan_baseline.json}
+    volumes:
+      - statusgate_data:/var/lib/statusgate
     depends_on:
       db:
         condition: service_healthy
@@ -78,11 +114,16 @@ services:
     build:
       context: ./frontend
       args:
+        RUN_TESTS: ${RUN_TESTS:-1}
         VITE_BRAND_NAME: ${VITE_BRAND_NAME:-StatusGate}
         VITE_BRAND_LOGO_URL: ${VITE_BRAND_LOGO_URL:-}
         VITE_BRAND_LOGO_URL_LIGHT: ${VITE_BRAND_LOGO_URL_LIGHT:-}
         VITE_BRAND_LOGO_URL_DARK: ${VITE_BRAND_LOGO_URL_DARK:-}
         VITE_BRAND_TAGLINE: ${VITE_BRAND_TAGLINE:-Service status monitoring}
+        VITE_DEFAULT_SPEED_TEST_URL_TEMPLATE: ${VITE_DEFAULT_SPEED_TEST_URL_TEMPLATE:-}
+        VITE_CLOUDFLARE_SPEED_TEST_ORIGIN: ${VITE_CLOUDFLARE_SPEED_TEST_ORIGIN:-}
+        VITE_DEFAULT_PROBE_URL: ${VITE_DEFAULT_PROBE_URL:-}
+        VITE_INTERNET_PING_HOST: ${VITE_INTERNET_PING_HOST:-}
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
@@ -93,3 +134,4 @@ services:
 
 volumes:
   pgdata:
+  statusgate_data:
