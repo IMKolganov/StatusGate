@@ -73,6 +73,24 @@ docker compose up -d --build
 
 ## Production deploy
 
+Pull + **test gate in Docker** + rebuild (recommended so you cannot forget tests):
+
+```bash
+cd ~/StatusGate
+chmod +x scripts/deploy.sh   # once
+./scripts/deploy.sh
+```
+
+The script uses Docker for `pytest` / `npm test` / `npm run build` — no host `pytest` or Node required. It uses `statusgate_test` on the same Postgres, not the live app DB.
+
+Emergency skip (avoid habitually):
+
+```bash
+SKIP_TESTS=1 ./scripts/deploy.sh
+```
+
+Manual deploy without the test gate:
+
 ```bash
 cd ~/StatusGate
 git pull --ff-only origin feature/public-tunnel-live-chart
