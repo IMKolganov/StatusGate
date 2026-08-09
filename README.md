@@ -73,22 +73,22 @@ docker compose up -d --build
 
 ## Production deploy
 
-Usual path (same as before):
-
 ```bash
 cd ~/StatusGate
 git pull --ff-only origin feature/public-tunnel-live-chart
 git submodule update --init --recursive
-docker compose up -d --build frontend backend
+
+# Backend tests (compose + db). Failures stop the deploy if you use `&&`.
+docker compose up -d db
+docker compose --profile test run --rm backend-test
+
+# Frontend tests run inside `docker compose build frontend` (npm test before vite build).
+docker compose up -d --build frontend backend worker
 ```
 
-Optional helper if you want tests to run automatically before rebuild:
+Skip frontend tests for one build: `RUN_TESTS=0 docker compose build frontend`
 
-```bash
-./scripts/deploy.sh
-```
-
-(`SKIP_TESTS=1 ./scripts/deploy.sh` skips the gate.)
+Optional all-in-one helper: `./scripts/deploy.sh`
 
 > `git submodule update` is required after every pull — `git pull` only moves the
 > submodule pointers, not the code inside `backend/` and `frontend/`. Skipping it
