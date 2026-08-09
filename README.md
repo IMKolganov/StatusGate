@@ -18,7 +18,10 @@ StatusGate helps teams publish transparent health information for their products
 
 - HTTP / JSON / XML health checks
 - **OpenVPN** and **Xray**: paste config, connect, probe through tunnel/proxy, show network details (IP, exit IP, DNS, latency)
+- VPN **throughput**: download + upload through the tunnel, plus a host WAN baseline for comparison (tunnel status page charts)
+- Continuous in-tunnel ping (gateway + internet path) for persistent OpenVPN sessions
 - Background worker with configurable poll intervals
+- Probe / speed-test endpoints are configurable via env (see `.env.example`); defaults match Cloudflare / ifconfig.me / public DNS
 
 ### Authentication & admin
 
@@ -58,7 +61,8 @@ git submodule update --init --recursive
 cp .env.example .env
 # Set JWT_SECRET in .env (at least 32 characters)
 # Optional: GOOGLE_CLIENT_ID for Google sign-in
-# Optional: VITE_BRAND_NAME, VITE_BRAND_LOGO_URL(_LIGHT/_DARK) for white-label
+# Optional: VITE_BRAND_* for white-label
+# Optional: DEFAULT_SPEED_TEST_URL_TEMPLATE, DEFAULT_PROBE_URL, INTERNET_PING_HOST, …
 
 docker compose up -d --build
 ```
