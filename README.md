@@ -22,6 +22,7 @@ StatusGate helps teams publish transparent health information for their products
 - Continuous in-tunnel ping (gateway + internet path) for persistent OpenVPN sessions
 - Background worker with configurable poll intervals
 - Probe / speed-test endpoints are configurable via env (see `.env.example`); defaults match Cloudflare / ifconfig.me / public DNS
+- **Edge allowlist / no HTTP response**: if nginx (or another edge) closes the connection without a status line (`deny all`, IP allowlist), Status Gate records outcome **error** with failure mode `no_http_response` — not **down**. Wrong expected status codes are not the issue (403 never arrives). Error details include the checker egress IP when available. Per service, set **IP family** to `auto` / `ipv4` / `ipv6` (dual-stack hosts often prefer IPv6 — use `ipv4` when the allowlist has only the checker’s IPv4). Ops options: allowlist that egress IP, probe an internal URL / dedicated allowlisted path, or use an Xray/OpenVPN check instead of a public `/api/info` URL.
 
 ### Authentication & admin
 
